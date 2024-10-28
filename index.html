@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Salary Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, button {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .print-button {
+            display: none;
+            margin-left: 20px;
+            padding: 5px 10px;
+        }
+
+        /* Print styles */
+        @media print {
+            body * {
+                display: none;
+            }
+            h1, h2 {
+                display: block;
+            }
+            #employeeInfo, #employeeInfo * {
+                display: table;
+                width: 100%; 
+                border-collapse: collapse; 
+            }
+            th, td {
+                display: table-cell; 
+                border: 1px solid black;
+                padding: 8px; 
+                width: auto; 
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Employee Salary Calculator</h1>
+
+<form id="employeeForm">
+    <label for="currencySymbol">Currency Symbol:<span style="color: red;">*</span></label>
+    <select id="currencySymbol" required>
+        <option value="Rs">PKR (Rs)</option>
+        <option value="$">USD ($)</option>
+        <option value="€">EUR (€)</option>
+        <option value="£">GBP (£)</option>
+        <option value="₹">INR (₹)</option>
+        <option value="¥">JPY (¥)</option>
+        <option value="₩">KRW (₩)</option>
+        <option value="AUD">AUD (A$)</option>
+        <option value="CAD">CAD (C$)</option>
+    </select>
+
+    <label for="name">Employee Name:<span style="color: red;">*</span></label>
+    <input type="text" id="name" placeholder="Enter employee name" required>
+
+    <label for="baseSalary">Base Salary:<span style="color: red;">*</span></label>
+    <input type="number" id="baseSalary" placeholder="Enter base salary" required>
+
+    <label for="requiredHours">Required Hours Per Day:<span style="color: red;">*</span></label>
+    <input type="number" id="requiredHours" value="8" required>
+
+    <label for="totalDays">Total Working Days:<span style="color: red;">*</span></label>
+    <input type="number" id="totalDays" value="22" required>
+
+    <label for="leaves">Leaves Taken:<span style="color: red;">*</span></label>
+    <input type="number" id="leaves" value="0" required>
+
+    <label for="loggedHours">Logged Hours:<span style="color: red;">*</span></label>
+    <input type="number" id="loggedHours" value="0" required>
+
+    <button type="button" id="calculateAndAddBtn">Calculate & Add Employee</button>
+</form>
+
+<h2>
+    Employee Salary Details
+    <button id="printBtn" class="print-button">Print Employee Salary Details</button>
+</h2>
+<table id="employeeInfo">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Base Salary</th>
+            <th>Total Working Days</th>
+            <th>Leaves Taken</th>
+            <th>Logged Hours</th>
+            <th>Calculated Salary</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    class Employee {
+        constructor(name, baseSalary, requiredHoursPerDay = 8, totalWorkingDays = 20) {
+            this.name = name;
+            this.baseSalary = baseSalary;
+            this.requiredHoursPerDay = requiredHoursPerDay;
+            this.totalWorkingDays = totalWorkingDays;
+            this.leavesTaken = 0;
+            this.loggedHours = 0;
+        }
+
+        logLeave(days) {
+            this.leavesTaken += days;
+        }
+
+        logHours(hours) {
+            this.loggedHours = hours; // Update logged hours directly
+        }
+
+        calculateSalary() {
+            const totalRequiredHours = (this.totalWorkingDays - this.leavesTaken) * this.requiredHoursPerDay;
+            const effectiveHourlyRate = this.baseSalary / totalRequiredHours;
+            return Math.min(this.loggedHours, totalRequiredHours) * effectiveHourlyRate;
+        }
+    }
+
+    const employees = [];
+
+    document.getElementById('calculateAndAddBtn').addEventListener('click', () => {
+        const currencySymbol = document.getElementById('currencySymbol').value;
+        const name = document.getElementById('name').value;
+        const baseSalary = parseFloat(document.getElementById('baseSalary').value);
+        const requiredHours = parseInt(document.getElementById('requiredHours').value);
+        const totalDays = parseInt(document.getElementById('totalDays').value);
+        const leaves = parseInt(document.getElementById('leaves').value);
+        const loggedHours = parseInt(document.getElementById('loggedHours').value);
+
+        if (name && baseSalary >= 0 && requiredHours > 0 && totalDays > 0 && leaves >= 0 && loggedHours >= 0) {
+            const employee = new Employee(name, baseSalary, requiredHours, totalDays);
+            employee.logLeave(leaves);
+            employee.logHours(loggedHours);
+            employees.push(employee);
+
+            // Clear inputs after adding
+            document.getElementById('employeeForm').reset();
+            updateEmployeeTable(currencySymbol);
+
+            // Prompt to add more employees
+            const addMore = confirm("Employee added successfully! Would you like to add another employee?");
+            if (addMore) {
+                document.getElementById('name').focus(); // Focus on the name input
+            } else {
+                alert("You can review the employee details in the table.");
+            }
+        } else {
+            alert('Please fill in all fields correctly.');
+        }
+    });
+
+    function updateEmployeeTable(currencySymbol) {
+        const tbody = document.querySelector('#employeeInfo tbody');
+        tbody.innerHTML = ''; // Clear previous info
+
+        employees.forEach(employee => {
+            const salary = employee.calculateSalary().toFixed(2);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${employee.name}</td>
+                <td>${currencySymbol}${employee.baseSalary}</td>
+                <td>${employee.totalWorkingDays}</td>
+                <td>${employee.leavesTaken}</td>
+                <td>${employee.loggedHours}</td>
+                <td>${currencySymbol}${salary}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Show or hide the print button based on records
+        document.getElementById('printBtn').style.display = employees.length > 0 ? 'inline-block' : 'none';
+    }
+
+    document.getElementById('printBtn').addEventListener('click', () => {
+        const tbody = document.querySelector('#employeeInfo tbody');
+        if (tbody.childElementCount === 0) {
+            alert("No employee records to print.");
+        } else {
+            window.print();
+        }
+    });
+</script>
+
+</body>
+</html>
