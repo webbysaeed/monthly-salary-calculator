@@ -18,7 +18,7 @@ This project is a simple web-based application that allows users to calculate em
 ## Live Demo
 
 You can access the live version of the Employee Salary Calculator here:
-[Visit Employee Salary Calculator](https://webbysaeed.github.io/monthly-salary-calculator/)
+<a href="https://webbysaeed.github.io/monthly-salary-calculator/" target="_blank">Visit Employee Salary Calculator</a>
 
 ## Getting Started
 
