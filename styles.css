@@ -1,0 +1,57 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+input, button {
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 100%;
+    max-width: 300px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+.print-button {
+    display: none;
+    margin-left: 20px;
+    padding: 5px 10px;
+}
+
+/* Print styles */
+@media print {
+    body * {
+        display: none;
+    }
+    h1, h2 {
+        display: block;
+    }
+    #employeeInfo, #employeeInfo * {
+        display: table;
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    th, td {
+        display: table-cell; 
+        border: 1px solid black;
+        padding: 8px; 
+        width: auto; 
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2; 
+    }
+}
