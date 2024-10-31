@@ -13,7 +13,7 @@ class Employee {
     }
 
     logHours(hours) {
-        this.loggedHours = hours; // Update logged hours directly
+        this.loggedHours = hours;
     }
 
     calculateSalary() {
@@ -43,14 +43,6 @@ document.getElementById('calculateAndAddBtn').addEventListener('click', () => {
         // Clear inputs after adding
         document.getElementById('employeeForm').reset();
         updateEmployeeTable(currencySymbol);
-
-        // Prompt to add more employees
-        const addMore = confirm("Employee added successfully! Would you like to add another employee?");
-        if (addMore) {
-            document.getElementById('name').focus(); // Focus on the name input
-        } else {
-            alert("You can review the employee details in the table.");
-        }
     } else {
         alert('Please fill in all fields correctly.');
     }
@@ -60,7 +52,7 @@ function updateEmployeeTable(currencySymbol) {
     const tbody = document.querySelector('#employeeInfo tbody');
     tbody.innerHTML = ''; // Clear previous info
 
-    employees.forEach(employee => {
+    employees.forEach((employee, index) => {
         const salary = employee.calculateSalary().toFixed(2);
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -70,12 +62,22 @@ function updateEmployeeTable(currencySymbol) {
             <td>${employee.leavesTaken}</td>
             <td>${employee.loggedHours}</td>
             <td>${currencySymbol}${salary}</td>
+            <td><button class="delete-icon" data-index="${index}">&times;</button></td> <!-- Use &times; for an "X" -->
         `;
         tbody.appendChild(row);
     });
 
     // Show or hide the print button based on records
     document.getElementById('printBtn').style.display = employees.length > 0 ? 'inline-block' : 'none';
+    
+    // Add event listeners to the delete buttons
+    document.querySelectorAll('.delete-icon').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const index = e.target.dataset.index; // Get index from the button
+            employees.splice(index, 1); // Remove employee from array
+            updateEmployeeTable(currencySymbol); // Update the table
+        });
+    });
 }
 
 document.getElementById('printBtn').addEventListener('click', () => {
