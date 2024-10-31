@@ -30,7 +30,23 @@ th {
     margin-left: 20px;
     padding: 5px 10px;
 }
+.delete-icon {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 30px; /* Adjust size as needed */
+}
 
+.delete-icon:hover {
+    background-color: darkred;
+}
 /* Print styles */
 @media print {
     body * {
